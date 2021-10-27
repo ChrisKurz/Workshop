@@ -36,6 +36,9 @@ And it can also be used for your own application. We will have a closer look at 
 
    _prj.conf_
    
+       # Enable Serial 
+       CONFIG_SERIAL=y
+   
        # Enable Logging
        CONFIG_LOG=y
    
