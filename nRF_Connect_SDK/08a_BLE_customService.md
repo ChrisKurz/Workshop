@@ -57,7 +57,7 @@ And add it to CusomtService.h:
        #define BT_UUID_CUSTOM_CHARACTERISTIC  BT_UUID_DECLARE_128(CUSTOM_CHARACTERISTIC_UUID)
 
 8) We need to define and register our service and its characteristics. By using the following helper macro we statically register our Service in our BLE host stack.
-Add the following to my_service.c:
+Add the following to CustomService.c:
 
        #include <bluetooth/gatt.h>
        
@@ -72,7 +72,7 @@ Add the following to my_service.c:
 
 ### Add data transfer (Write without Response) to the project
 
-9) Now add the function that takes care about getting a trigger if data is received. Add the following to my_service.c:
+9) Now add the function that takes care about getting a trigger if data is received. Add the following to CustomService.c:
 
        /* This function is called whenever the RX Characteristic has been written to by a Client */
        static ssize_t on_receive(struct bt_conn *conn,
