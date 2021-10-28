@@ -72,5 +72,89 @@ Here one can notice that both threads now yield after printing a message making 
 ## 1.2 Thread sleeping
 There are many ways to make the thread relinquish CPU by making it go to “Waiting” state instead of “Ready” and one of them is using k_sleep or the variation of it like k_msleep(). After you finished the previous part of the exercise with thread yielding, replace the k_yield() in both the threads with k_msleep() like below with sleep duration of say 5ms.
 
+      void thread0(void)
+      {
+          while (1) {
+              printk("Hello, I am thread0\n");
 
+              // sleep for 5ms
+              k_msleep(5);
+          }
+      }
 
+      void thread1(void)
+      {
+          while (1) {
+              printk("Hello, I am thread1\n");
+
+              // sleep for 5ms
+              k_msleep(5);
+          }      
+      }
+
+You should see the below out on the terminal emulator.
+
+![](images/ZephyrRtos-7.jpg)
+
+Even though the output looks exactly similar to the version of the threads using k_yield() there is a significant difference here. The threads are printing less frequently (which is acceptable in this case) but also calling the scheduler less frequently. Take a look at this time sequence graph and look at the idle period during which the whole can go to low power states.
+
+![](images/ZephyrRtos-8.jpg)
+
+As you can see, when both the threads sleep for certain time and there are no other active threads for the scheduler to make active, the idle_thread (which is one of the system threads) is made active by the scheduler. If we chose k_sleep() instead of k_yield() incorrectly here, then the scheduler would be unnecessarily making the idle thread active too frequently even though the tasks still have something to do before yielding. Activating idle thread unnecessarily or too frequently increases the power consumption of the overall solution. That is also one of the reasons the tickless mode for idle_thread is made the default setting in the Nordic Connect SDK so as to get maximum power saving during idling.
+
+- k_yield() will change the thread state from Running->Ready, which means that the next rescheduling point the thread that just yielded is still a candidate in scheduler’s algorithm to make a thread active (running). The overall result you see is that after the thread yielded there will be at least one item in the ready thread queue for the scheduler to chose from at the next rescheduling point.
+- k_sleep(timeout) will change the thread state from Running->Waiting, which means that at the next rescheduling point the thread that just slept will not be a candidate in scheduler’s algorithm until timeout amount of time has passed since calling k_sleep. After that timeout, the thread state is changed again from Waiting->Ready and the thread then becomes a candidate in scheduler’s algorithm to make. Hence thread sleeping is better choice for adding delays and not for yielding.
+
+If the developer do not want to worry about creating a perfect logic for yielding between equal priority threads (so as to NOT starve one thread unintentionally from executing) you can configure the TIMESLICING config for the scheduler and do not to worry about explicitly making equal priority threads yielding. With preemptive scheduling with time slicing enabled you can tell the scheduler to time limit continuous execution time of equal priority threads.
+
+## 1.3 Preemptive Time Slicing
+Change the threads definition to the one without k_msleep() or k_yield() and make the priorities equal again like below.
+
+      /* scheduling priority used by each thread */
+      #define THREAD0_PRIORITY 7
+      #define THREAD1_PRIORITY 7
+
+      void thread0(void)
+      {
+          while (1) {
+              printk("Hello, I am thread0\n");
+          }
+      }	  
+
+      void thread1(void)
+      {
+          while (1) {
+              printk("Hello, I am thread1\n");
+          }
+      }
+
+Now the two threads are equal priority and none of the are yielding or sleeping, which we verified that the first thread that starts running should block the other one indefinitely. To avoid that. we can enabled time slicing feature of the scheduler and not worry about them being able to starve each other just because they are of equal priorities. there are other ways one thread can starve other (e.g. semaphore, mutex etc. but that is the topic for later, lets focus on starvation due to priorities here)
+Lets change the configuration of the time slicing for the scheduler in our project. For the rest of the RTOS exercises changing the configuration of features for the project can be done in two ways as below
+
+1. Editing proj.conf file
+For enabling time slicing for all non negative priority threads, add these lines in your existing proj.conf file in your project folder.
+
+       CONFIG_TIMESLICING=y
+       CONFIG_TIMESLICE_SIZE=10
+       CONFIG_TIMESLICE_PRIORITY=0
+
+2. Other way than editing the proj.conf file is to open the GUI project settings by clicking the “Guiconfig” from the actions window of the nRF Connect extension of the Visucal Code Studio and open the timeslicing option available in “General Kernel Options-> Timer API Options -> Thread time slicing”. Change the value of TIMESLICE_SIZE from 0 to 10. What this does is that we tell the scheduler that if two threads of equal priorities are in ready state, then the one running has a maximum of 10ms before it is preempted by the scheduler forcefully for the other equal priority ready state thread to be able to run.
+
+![](images/ZephyrRtos-9.jpg)
+      
+Lets see if your changes (in proj.conf or using GUI interface) have any effect. After you save your configuration, build and flash again. Check what you see on your terminal emulator after you flash the newly built firmware. You should see something like below
+
+![](images/ZephyrRtos-10.jpg)
+
+![](images/ZephyrRtos-11.jpg)
+
+The timeline of the activity should look something like above. Now you see that the scheduler forcefully preempts the thread0 after it runs for 10ms and lets the thread1 run for 10ms after which thread1 is also preempted to give time for thread0 again. The output here might be confusing, but it shows you that the scheduler can preempt the thread irrespective of what it was doing after the configured time slice amount of time (10ms in this exercise). In this context you see that the scheduler can preempt the thread even though it did not print the whole printk message. The new thread will continue to print the message exactly from the same place where it was preempted the last time.
+
+## 1.4 Time slice vs Priorities
+In the previous change, you limited the time slice max limit of a single run of one equal priority thread. But it is important to know that time slice configuration only effects equal priorities threads. But what happens when time slice is enabled and there are no equal priority thread to run after the time slice expires. You can find out by increasing the priority (by lowering the value) of one of the threads. For example, if you change the value of THREAD0_PRIORITY to 6 as below (now thread0 is higher priority than thread1 after the change)
+
+       /* scheduling priority used by each thread */
+       #define THREAD0_PRIORITY 6
+       #define THREAD1_PRIORITY 7
+
+Build, flash and check the terminal emulator and see that the output goes back to the same where thread0 seems to be running uninterrupted and thread1 is starving for ever. Even though the output looks the same, the scheduler preempts thread0 every 10ms (time slice interval) to check if there are any other equal or higher priority ready state threads in the queue. Since there are none (as the waiting thread1 is of lower priority), the scheduler lets the thread0 run for another time slice period, but the output looks as if thread0 was never preempted because scheduler did not find anything else to run and also thread0 is not yielding.     
