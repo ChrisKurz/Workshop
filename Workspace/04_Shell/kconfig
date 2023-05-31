@@ -1,0 +1,16 @@
+# MyApp configuration
+menu "MyApp Settings"
+   menu "Logging"
+      config MYAPP_LOG_ENABLED
+         bool "Enable MyApp Logging"
+         default y
+
+      module = MYAPP
+      module-str = MyApp sample
+      source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+   endmenu
+endmenu
+
+menu "Zephyr Kernel"
+  source "Kconfig.zephyr"
+endmenu
