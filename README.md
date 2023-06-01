@@ -8,3 +8,5 @@
 5) [BME280 Sensor ](https://github.com/ChrisKurz/nRF_Connect_SDK/blob/main/doc/NCSv2.3.0_ZDD_Sensors_BME280_nRF52840.md)
 6) [Using a Thread to handle BME280](https://github.com/ChrisKurz/nRF_Connect_SDK/blob/main/doc/NCSv2.3.0_ZKS_Threads_BME280.md)
 
+## Bluetooth LE
+7) [Bluetooth Connection (Device Information Service)](https://github.com/ChrisKurz/Bluetooth/blob/main/doc/NCSv2.3.0_02_peripheral_Service_DeviceInformation.md)
