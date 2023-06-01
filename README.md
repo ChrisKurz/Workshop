@@ -16,3 +16,4 @@
 ## Bootloader
 10) [Adding MCUboot to a project](https://github.com/ChrisKurz/MCUboot/blob/main/doc/NCSv2.3.0_01-AddingMcubootToProject.md)
 11) [Create an user-signed Application Image](https://github.com/ChrisKurz/MCUboot/blob/main/doc/NCSv2.3.0_ImageSigning_(ecdsa-p256).md)
+12) [Create a confirmed Upgrade Image](https://github.com/ChrisKurz/MCUboot/blob/main/doc/NCSv2.3.0_01a-SwapTypePermanent.md)
