@@ -1,0 +1,27 @@
+// To get started, press Ctrl+Space to bring up the completion menu and view the available nodes.
+
+// You can also use the buttons in the sidebar to perform actions on nodes.
+// Actions currently available include:
+
+// * Enabling / disabling the node
+// * Adding the bus to a bus
+// * Removing the node
+// * Connecting ADC channels
+
+// For more help, browse the DeviceTree documentation at https://docs.zephyrproject.org/latest/guides/dts/index.html
+// You can also visit the nRF DeviceTree extension documentation at https://nrfconnect.github.io/vscode-nrf-connect/devicetree/nrfdevicetree.html
+
+/* Configuration of a BME280 device on an Arduino I2C bus.
+   -------------------------------------------------------
+   Device Address 0x76 is used here. 
+   Selected pins (Arduino I2C bus default pins - I2C0):
+        SCL  ->  P0.27
+        SDA  ->  P0.26
+*/    
+&arduino_i2c {
+    status = "okay";
+    bme280@76 {
+            compatible = "bosch,bme280";
+            reg = <0x76>;
+    };
+};
