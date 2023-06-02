@@ -17,3 +17,4 @@
 10) [Adding MCUboot to a project](https://github.com/ChrisKurz/MCUboot/blob/main/doc/NCSv2.3.0_01-AddingMcubootToProject.md)
 11) [Create an user-signed Application Image](https://github.com/ChrisKurz/MCUboot/blob/main/doc/NCSv2.3.0_ImageSigning_(ecdsa-p256).md)
 12) [Create a confirmed Upgrade Image](https://github.com/ChrisKurz/MCUboot/blob/main/doc/NCSv2.3.0_01a-SwapTypePermanent.md)
+13) [Code Example: Device Firmware Update handled in application code using MCUmgr](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/samples/subsys/mgmt/mcumgr/smp_svr/README.html) - keep in mind to add the __overlay_BT.conf__ KCONFIG fragment when adding the Build Configuration in your Visual Studio Code project. 
