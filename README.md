@@ -12,6 +12,7 @@
         
 ## Bluetooth LE
 7) [Bluetooth iBeacon](https://github.com/ChrisKurz/Bluetooth/blob/main/doc/NCSv2.5.2_01_Beacon.md)
+8) [Bluetooth Connection (Device Information Service)](https://github.com/ChrisKurz/Bluetooth/blob/main/doc/NCSv2.5.2_02_peripheral_Service_DeviceInformation.md)
 
 ## Bootloader
 
