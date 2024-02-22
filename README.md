@@ -11,7 +11,7 @@
 
         
 ## Bluetooth LE
-
+7) [Bluetooth iBeacon](https://github.com/ChrisKurz/Bluetooth/blob/main/doc/NCSv2.5.2_01_Beacon.md)
 
 ## Bootloader
 
